@@ -1,0 +1,233 @@
+﻿@model  TodoList.DTOs.HomeViewDto
+
+
+
+
+
+
+
+    <div class="text-center">
+        <div class="top">
+            <h3>My Tasks</h3>
+        </div>
+
+    </div>
+
+<form asp-controller="Home" asp-action="Filter" method="Post">
+    <div class="row m-1 ">
+
+        <div class="col-2 first">
+
+            <div class="form-group">
+                <label for="exampleFormControlSelect1">Cartegory:</label>
+                <select asp-for="Filter.Cartegory" class="form-control">
+
+                    @{
+                        foreach (var item in ViewBag.cart)
+                        {
+                            <option value=@item.Id>  @item.Name</option>
+                        }
+
+
+
+                    }
+                  
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="exampleFormControlSelect1">Due:</label>
+                <input asp-for="Filter.Date" type="date" />
+            </div>
+            <div class="form-group">
+                <label for="exampleFormControlSelect1">Status</label>
+                <select asp-for="Filter.Status" class="form-control">
+
+                    @{
+
+                        foreach (var item in ViewBag.status)
+                        {
+                            <option value=@item.Id>  @item.Name</option>
+                        }
+
+
+
+
+                    }
+                  
+                </select>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                <button type="button" class="btn btn-primary btn-sm">Clear</button>
+
+            </div>
+        </div>
+    </form>
+        <div class="col-10  second">
+
+            @{ if (!string.IsNullOrEmpty(ViewBag.message))
+                {
+                    <div class="alert alert-primary text-center" role="alert">
+                        @ViewBag.message
+                    </div>
+
+                }
+
+
+            }
+
+
+
+        <button type="button" class="btn btn-primary btn-sm m-1" data-toggle="modal" data-target="#exampleModal">
+            <i class="fas fa-plus"></i>
+             Add new Task
+        </button>
+            <div>
+                <h2> You have @Model.Taskcount Tasks </h2>
+                <table class="table  ">
+                    <thead>
+                        <tr>
+                            <th scope="col">Title</th>
+                            <th scope="col">Cartegory</th>
+                            <th scope="col">Due Date</th>
+                            <th scope="col">Status</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        @{
+
+                            foreach (var item in  Model.AllTask)
+                            {
+
+                                                <tr class="@( item.Status.Name == "Completed" ? "alert-primary" : "alert-danger")">
+
+                                                    <td> <a href="">@item.Title</a></td>
+                                                    <td>@item.Cartegory.Name</td>
+                                                    <td>@item.DueDate</td>
+                                                    <td class="@( item.Status.Name == "Completed" ? "alert-primary" : "alert-danger")">@item.Status.Name</td>
+
+                                                    <td class="text-center">
+                                                       
+
+                                                            <form class="d-inline"  asp-action="ChangeStatus" asp-controller="Home" method="Post" asp-route-id="@item.Id">
+                                                               
+                                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                                    <i class="fas fa-check-circle"></i>                                     
+                                                                </button>
+
+                                                            </form>
+                                                             
+                                                      
+                                                     
+                                                            <form class="d-inline" asp-action="DeleteTask" asp-controller="Home" method="post">     
+                                                                <input  type="hidden" name="id" value="@item.Id"/>
+                                                                    <button type="submit" class="btn btn-primary btn-sm">
+                                                                        <i class="fas fa-trash-alt"></i>
+                                                                    </button>
+                                                            </form>
+                                                 
+                                                       
+
+                                                    </td>
+
+                                                   
+
+                                                </tr>
+
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+            </div>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    @for (int i = 1; i < ViewBag.totalPages; i++)
+                    {
+                        <li class="page-item" ><a class="page-link"  asp-action="Index" asp-controller="Home" asp-route-page ="@i" >@i</a></li>
+                    }
+                 
+
+                </ul>
+            </nav>
+
+
+    </div>
+
+    <!-- Modal -->
+    <form asp-action="Index" method="post" asp-controller="Home">
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">+ Add New Task</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+
+
+                    <div class="modal-body">
+                        <label for="exampleFormControlSelect1"> Cartegory</label>
+                        <select asp-for="TodoTask.Cartegory" class="form-control">
+
+                            @{
+
+                                foreach (var item in ViewBag.cart)
+                                {
+
+                                    <option value=@item.Id>  @item.Name</option>
+
+                                }
+                            }
+
+                        </select>
+
+                        <div>
+                          
+
+                            <label for="exampleFormControlInput1">Title</label>
+                            <input asp-for="TodoTask.Title" class="form-control">
+                            <span asp-validation-for="TodoTask.Title" class="text-danger"></span>
+
+
+                        </div>
+
+
+                        <div>
+                           
+                            <label for="exampleFormControlTextarea1">Description</label>
+                            <textarea class="form-control" asp-for="TodoTask.Description" rows="3"></textarea>
+                            <span asp-validation-for="TodoTask.Description" class="text-danger"></span>
+
+                        </div>
+
+
+                        <div>
+                            <label for="exampleFormControlInput1">Date</label>
+                            <input type="date" asp-for="TodoTask.DueDate" class="form-control">
+                            <span asp-validation-for="TodoTask.DueDate" class="text-danger"></span>
+
+                        </div>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add Task</button>
+                    </div>
+
+                </div>
+
+
+
+
+
+            </div>
+        </div>
+    </form>
